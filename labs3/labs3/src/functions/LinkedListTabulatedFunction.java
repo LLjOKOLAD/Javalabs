@@ -1,8 +1,8 @@
-
 package functions;
 
 public class LinkedListTabulatedFunction implements TabulatedFunction {
 
+    // Вложенный класс для представления узла списка
     private class FunctionNode {
 
         private FunctionPoint point = null;
@@ -14,6 +14,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
     private FunctionNode headMain = new FunctionNode(), head, tail, current;
 
     {
+        // Инициализация sentinel-узла
         headMain.next = headMain;
         headMain.prev = headMain;
         head = headMain;
@@ -21,6 +22,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         current = headMain;
     }
 
+    // Конструктор для создания функции на основе левой и правой границ, а также количества точек
     public LinkedListTabulatedFunction(double leftX, double rightX, int pointsCount) {
         if (leftX >= rightX || pointsCount < 2) {
             throw new IllegalArgumentException();
@@ -32,6 +34,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         current = head;
         head.prev = headMain;
 
+        // Инициализация первой точки и последующих точек
         current.point = new FunctionPoint(leftX, 0);
         current.next = new FunctionNode();
         current.next.prev = current;
@@ -51,6 +54,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
 
     }
 
+    // Конструктор для создания функции на основе границ и массива значений
     public LinkedListTabulatedFunction(double leftX, double rightX, double values[]) {
         if (leftX >= rightX && values.length < 2) {
             throw new IllegalArgumentException();
@@ -62,6 +66,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         current = head;
         head.prev = null;
 
+        // Инициализация первой точки и последующих точек на основе массива значений
         current.point = new FunctionPoint(leftX, values[0]);
         current.next = new FunctionNode();
         current.next.prev = current;
@@ -81,13 +86,13 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         tail.next = headMain;
     }
 
-    FunctionNode getNodeByIndex(int index) { //получаем элемент списка с текущим индексом
-
+    // Получение узла списка по индексу
+    FunctionNode getNodeByIndex(int index) {
         int fromTail = length - index - 1;
         int fromHead = index;
         int fromCurrent = Math.abs(currentInd - index);
 
-        if (fromTail < fromHead) { //ищем от куда быстрее добраться до нужного индекса
+        if (fromTail < fromHead) {
             if (fromTail < fromCurrent) {
                 current = tail;
                 currentInd = length - 1;
@@ -99,7 +104,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
             }
         }
 
-        if (index < currentInd) { //нашли индекс от куда быстрее добраться, теперь выбираем вперед двигаться или назад
+        if (index < currentInd) {
             while (currentInd != index) {
                 current = current.prev;
                 currentInd--;
@@ -113,7 +118,8 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         return current;
     }
 
-    FunctionNode addNodeToTail() { //добавить элемент в конец
+    // Добавление узла в конец списка
+    FunctionNode addNodeToTail() {
         tail.next = new FunctionNode();
         tail.next.prev = tail;
         tail.next.next = headMain;
@@ -123,7 +129,8 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         return tail;
     }
 
-    FunctionNode addNodeByIndex(int index) {//добавить точку в указанное место
+    // Добавление узла в указанное место в списке
+    FunctionNode addNodeByIndex(int index) {
         if (index < 0 || index > length) {
             throw new FunctionPointIndexOutOfBoundsException();
         }
@@ -141,16 +148,15 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         length++;
 
         return current;
-
     }
 
-    FunctionNode deleteNodeByIndex(int index) { //удалить точку с указанным индексом
+    // Удаление узла по индексу
+    FunctionNode deleteNodeByIndex(int index) {
         if (index < 0 || index >= length) {
             throw new FunctionPointIndexOutOfBoundsException();
         }
         getNodeByIndex(index);
         FunctionNode node = current;
-        // currentInd=index;
         current.prev.next = current.next;
         current.next.prev = current.prev;
         current = current.prev;
@@ -162,10 +168,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         return node;
     }
 
-    /**
-     *
-     * @return
-     */
+    // Получение левой границы области определения функции
     @Override
     public double getLeftDomainBorder() {
         if (length == 0) {
@@ -174,10 +177,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         return head.point.x;
     }
 
-    /**
-     *
-     * @return
-     */
+    // Получение правой границы области определения функции
     @Override
     public double getRightDomainBorder() {
         if (length == 0) {
@@ -186,24 +186,15 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         return tail.point.x;
     }
 
-    /**
-     *
-     * @return
-     */
+    // Получение количества точек в функции
     @Override
     public int getPointsCount() {
         return length;
     }
 
-    /**
-     *
-     * @param index
-     * @param point
-     * @throws InappropriateFunctionPointException
-     */
+    // Установка точки по индексу
     @Override
     public void setPoint(int index, FunctionPoint point) throws InappropriateFunctionPointException {
-
         if (length == 0) {
             throw new IllegalStateException();
         }
@@ -228,14 +219,9 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         }
 
         node.point = new FunctionPoint(point);
-
     }
 
-    /**
-     *
-     * @param index
-     * @return
-     */
+    // Получение x-координаты точки по индексу
     @Override
     public double getPointX(int index) {
         if (length == 0) {
@@ -247,12 +233,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         return getNodeByIndex(index).point.x;
     }
 
-    /**
-     *
-     * @param index
-     * @param x
-     * @throws InappropriateFunctionPointException
-     */
+    // Установка x-координаты точки по индексу
     @Override
     public void setPointX(int index, double x) throws InappropriateFunctionPointException {
         if (length == 0) {
@@ -280,11 +261,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         node.point.x = x;
     }
 
-    /**
-     *
-     * @param index
-     * @return
-     */
+    // Получение y-координаты точки по индексу
     @Override
     public double getPointY(int index) {
         if (length == 0) {
@@ -296,11 +273,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         return getNodeByIndex(index).point.y;
     }
 
-    /**
-     *
-     * @param index
-     * @param y
-     */
+    // Установка y-координаты точки по индексу
     @Override
     public void setPointY(int index, double y) {
         if (length == 0) {
@@ -312,11 +285,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         getNodeByIndex(index).point.y = y;
     }
 
-    /**
-     *
-     * @param x
-     * @return
-     */
+    // Получение значения функции в заданной точке
     @Override
     public double getFunctionValue(double x) {
         if (length == 0) {
@@ -337,13 +306,10 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
             return current.point.y;
         }
 
-        return (current.next.point.y - current.point.y) / (current.next.point.y - current.point.y) * (x - current.point.x);
+        return current.point.y + (x - current.point.x) * (current.next.point.y - current.point.y) / (current.next.point.x - current.point.x);
     }
 
-    /**
-     *
-     * @param index
-     */
+    // Удаление точки по индексу
     @Override
     public void deletePoint(int index) {
         if (length < 3) {
@@ -356,11 +322,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         deleteNodeByIndex(index);
     }
 
-    /**
-     *
-     * @param point
-     * @throws InappropriateFunctionPointException
-     */
+    // Добавление точки в функцию
     @Override
     public void addPoint(FunctionPoint point) throws InappropriateFunctionPointException {
         if (length != 0 && (point.x < head.point.x || point.x > tail.point.x)) {
